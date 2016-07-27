@@ -42,7 +42,7 @@ public class Driver2048 extends JFrame implements ActionListener
         choosingWindow.setSize( 400,400 );
         
         
-        ImageIcon image2 = new ImageIcon("2048_3D_icon.jpg");
+        ImageIcon image2 = new ImageIcon("Resources/2048_3D_icon.jpg");
         JButton button2 = new JButton( image2 );
         button2.addActionListener( this );
         button2.setActionCommand( "3D" );

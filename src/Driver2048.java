@@ -64,7 +64,7 @@ public class Driver2048 extends JFrame implements ActionListener
 
 
     /**
-     * TODO Write your method description here.
+     * Launches application in window container. 
      * 
      * @param args
      */

@@ -112,7 +112,6 @@ public class ThreeD2048Graphics extends JPanel
 
         }
         bg.addChild( background );
-        // bg.compile();
         activeTiles = new Tile3D[4][4][4];
     }
 
@@ -294,7 +293,7 @@ public class ThreeD2048Graphics extends JPanel
 
 
     /**
-     * Give my the reference to the tile to be moved. Tell me where I am in the
+     * Give me the reference to the tile to be moved. Tell me where I am in the
      * array and where I need to go. Only for rectalinear movement with no
      * collisions. Displays changes graphically.
      * 
@@ -376,13 +375,13 @@ public class ThreeD2048Graphics extends JPanel
         su.addBranchGraph( temp );
         removeTile( x, y, z );
         BranchGroup temp2 = new BranchGroup();
-        activeTiles[x + diffX][y + diffY][z + diffZ] = new Tile3D( tile );
-        activeTiles[x + diffX][y + diffY][z + diffZ].setPoint( point );
+        activeTiles[x1][y1][z1] = new Tile3D( tile );
+        activeTiles[x1][y1][z1].setPoint( point );
         temp.detach();
-        activeTiles[x + diffX][y + diffY][z + diffZ].drawTile( temp2 );
-        graphicTiles[x + diffX][y + diffY][z + diffZ].detach();
-        graphicTiles[x + diffX][y + diffY][z + diffZ].addChild( temp2 );
-        su.addBranchGraph( graphicTiles[x + diffX][y + diffY][z + diffZ] );
+        activeTiles[x1][y1][z1].drawTile( temp2 );
+        graphicTiles[x1][y1][z1].detach();
+        graphicTiles[x1][y1][z1].addChild( temp2 );
+        su.addBranchGraph( graphicTiles[x1][y1][z1] );
         activeTiles[x][y][z] = null;
     }
 
@@ -719,22 +718,18 @@ public class ThreeD2048Graphics extends JPanel
 
 
     public void fourTileCollisionHandler(
-        Tile3D tile0,
         Tile3D tile1,
         Tile3D tile2,
         Tile3D tile3,
-        Point3i p0,
+        Tile3D tile4,
         Point3i p1,
         Point3i p2,
         Point3i p3,
+        Point3i p4,
         int directionOfMovement )
     {
         // Made the numbers following the tiles the same as the array index for
         // easy comprehension
-        int x0 = p0.x;
-        int y0 = p0.y;
-        int z0 = p0.z;
-
         int x1 = p1.x;
         int y1 = p1.y;
         int z1 = p1.z;
@@ -747,180 +742,186 @@ public class ThreeD2048Graphics extends JPanel
         int y3 = p3.y;
         int z3 = p3.z;
 
-        int num0 = tile0.getNum();
+        int x4 = p4.x;
+        int y4 = p4.y;
+        int z4 = p4.z;
+
         int num1 = tile1.getNum();
         int num2 = tile2.getNum();
         int num3 = tile3.getNum();
+        int num4 = tile4.getNum();
 
         if ( directionOfMovement == UP )
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
+            if ( num1 == num2 && num3 == num4 )
             {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( x3, 3, z3 );
-                moveTile( tile2, x2, y2, z2, x3, 3, z3 );
-                removeTile( x3, 3, z3 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x3 ),
-                    indexToPoint( 3 ),
-                    indexToPoint( z3 ) ) );
+                score += calcPoints( num1 * 2 );
+                score += calcPoints( num3 * 2 );
+                
+                removeTile( x4, y4, z4 );
+                moveTile( tile3, x3, y3, z3, x4, y4, z4 );
+                removeTile( x4, y4, z4 );
+                Tile3D newTile = new Tile3D( num3 * 2 ); 
+                newTile.setPoint( new Point3f( indexToPoint( x4 ),
+                    indexToPoint( y4 ),
+                    indexToPoint( z4 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x3][3][z3].detach();
-                graphicTiles[x3][3][z3].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x3][3][z3] );
-                activeTiles[x3][3][z3] = newTile;
-                removeTile( x2, 2, z2 );
-                moveTile( tile1, x1, y1, z1, x2, 2, z2 );
-                removeTile( x2, 2, z2 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( x2 ),
-                    indexToPoint( 2 ),
-                    indexToPoint( z2 ) ) );
+                graphicTiles[x4][y4][z4].detach();
+                graphicTiles[x4][y4][z4].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x4][y4][z4] );
+                activeTiles[x4][y4][z4] = newTile;
+                
+                removeTile( x2, y2, z2 );
+                moveTile( tile2, x2, y2, z2, x3, 2, z3 );
+                removeTile( x3, y3, z3 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( x3 ),
+                    indexToPoint( y3 ),
+                    indexToPoint( z3 ) ) );
                 newTile1.drawTile( bg2 );
-                graphicTiles[x2][2][z2].detach();
-                graphicTiles[x2][2][z2].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[x2][2][z2] );
-                activeTiles[x2][2][z2] = newTile1;
+                graphicTiles[x3][y3][z3].detach();
+                graphicTiles[x3][y3][z3].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[x3][y3][z3] );
+                activeTiles[x3][y3][z3] = newTile1;
             }
-            else if ( num0 == num1 && num2 != num3 )
+            else if ( num1 == num2 && num3 != num4 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( x1, 1, z1 );
-                moveTile( tile0, x0, y0, z0, x1, 1, z1 );
-                removeTile( x1, 1, z1 );
-                Tile3D newTile = new Tile3D( num0 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( 1 ),
-                    indexToPoint( z1 ) ) );
-                newTile.drawTile( bg );
-                graphicTiles[x1][1][z1].detach();
-                graphicTiles[x1][1][z1].addChild( bg );
-                su.addBranchGraph( graphicTiles[x1][1][z1] );
-                activeTiles[x1][1][z1] = newTile;
-            }
-            else if ( num1 == num2 )
-            {
-                score += calcPoints( num1 * 2 );
-                removeTile( x2, 2, z2 );
-                moveTile( tile1, x1, y1, z1, x2, 2, z2 );
-                removeTile( x2, 2, z2 );
+                score += calcPoints( num2 * 2 );
+                removeTile( x2, 1, z2 );
+                moveTile( tile2, x1, y1, z1, x2, 1, z2 );
+                removeTile( x2, 1, z2 );
                 Tile3D newTile = new Tile3D( num1 * 2 );
                 newTile.setPoint( new Point3f( indexToPoint( x2 ),
-                    indexToPoint( 2 ),
+                    indexToPoint( 1 ),
                     indexToPoint( z2 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x2][2][z2].detach();
-                graphicTiles[x2][2][z2].addChild( bg1 );
-                activeTiles[x2][2][z2] = newTile;
-                su.addBranchGraph( graphicTiles[x2][2][z2] );
-                moveTile( tile0, x0, y0, z0, x1, 1, z1 );
+                newTile.drawTile( bg );
+                graphicTiles[x2][1][z2].detach();
+                graphicTiles[x2][1][z2].addChild( bg );
+                su.addBranchGraph( graphicTiles[x2][1][z2] );
+                activeTiles[x2][1][z2] = newTile;
             }
             else if ( num2 == num3 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( x3, 3, z3 );
-                moveTile( tile2, x2, y2, z2, x3, 3, z3 );
-                removeTile( x3, 3, z3 );
+                score += calcPoints( num2 * 2 );
+                removeTile( x3, 2, z3 );
+                moveTile( tile2, x2, y2, z2, x3, 2, z3 );
+                removeTile( x3, 2, z3 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
                 newTile.setPoint( new Point3f( indexToPoint( x3 ),
-                    indexToPoint( 3 ),
+                    indexToPoint( 2 ),
                     indexToPoint( z3 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x3][3][z3].detach();
-                graphicTiles[x3][3][z3].addChild( bg1 );
-                activeTiles[x3][3][z3] = newTile;
-                moveTile( tile1, x1, y1, z1, x1, 2, z1 );
-                moveTile( tile0, x0, y0, z0, x1, 1, z0 );
+                graphicTiles[x3][2][z3].detach();
+                graphicTiles[x3][2][z3].addChild( bg1 );
+                activeTiles[x3][2][z3] = newTile;
+                su.addBranchGraph( graphicTiles[x3][2][z3] );
+                moveTile( tile2, x1, y1, z1, x2, 1, z2 );
+            }
+            else if ( num3 == num4 )
+            {
+                score += calcPoints( num2 * 2 );
+                removeTile( x4, 3, z4 );
+                moveTile( tile3, x3, y3, z3, x4, 3, z4 );
+                removeTile( x4, 3, z4 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( x4 ),
+                    indexToPoint( 3 ),
+                    indexToPoint( z4 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x4][3][z4].detach();
+                graphicTiles[x4][3][z4].addChild( bg1 );
+                activeTiles[x4][3][z4] = newTile;
+                moveTile( tile2, x2, y2, z2, x2, 2, z2 );
+                moveTile( tile2, x1, y1, z1, x2, 1, z1 );
             }
         }
         else if ( directionOfMovement == DOWN )
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( x0, 0, z0 );
-                moveTile( tile1, x1, y1, z1, x0, 0, z0 );
-                removeTile( x0, 0, z0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x0 ),
-                    indexToPoint( 0 ),
-                    indexToPoint( z0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x0][0][z0].detach();
-                graphicTiles[x0][0][z0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x0][0][z0] );
-                activeTiles[x0][0][z0] = newTile;
-                removeTile( x2, 1, z2 );
-                moveTile( tile2, x2, y2, z2, x2, 1, z2 );
-                removeTile( x2, 1, z2 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( 1 ),
-                    indexToPoint( z1 ) ) );
-                newTile1.drawTile( bg2 );
-                graphicTiles[x1][1][z1].detach();
-                graphicTiles[x1][1][z1].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[x1][1][z1] );
-                activeTiles[x1][1][z1] = newTile1;
-
-            }
-            else if ( num0 == num1 && num2 != num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                removeTile( x0, 0, z0 );
-                moveTile( tile1, x1, y1, z1, x0, 0, z0 );
-                removeTile( x0, 0, z0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x0 ),
-                    indexToPoint( 0 ),
-                    indexToPoint( z0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x0][0][z0].detach();
-                graphicTiles[x0][0][z0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x0][0][z0] );
-                removeTile( x2, 1, z2 );
-                activeTiles[x0][0][z0] = newTile;
-                moveTile( tile2, x2, y2, z2, x2, 1, z2 );
-                moveTile( tile3, x3, y3, z3, x3, 2, z3 );
-            }
-            else if ( num1 == num2 )
+            if ( num1 == num2 && num3 == num4 )
             {
                 score += calcPoints( num1 * 2 );
-                removeTile( x1, 1, z1 );
-                moveTile( tile2, x2, y2, z2, x2, 1, z2 );
-                removeTile( x1, 1, z1 );
-                Tile3D newTile = new Tile3D( num1 * 2 );
+                score += calcPoints( num3 * 2 );
+                removeTile( x1, 0, z1 );
+                moveTile( tile2, x2, y2, z2, x1, 0, z1 );
+                removeTile( x1, 0, z1 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
                 newTile.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( 1 ),
+                    indexToPoint( 0 ),
                     indexToPoint( z1 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x1][1][z1].detach();
-                graphicTiles[x1][1][z1].addChild( bg1 );
-                activeTiles[x1][1][z1] = newTile;
-                su.addBranchGraph( graphicTiles[x1][1][z1] );
-                moveTile( tile3, x3, y3, z3, x3, 2, z3 );
+                graphicTiles[x1][0][z1].detach();
+                graphicTiles[x1][0][z1].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x1][0][z1] );
+                activeTiles[x1][0][z1] = newTile;
+                removeTile( x3, 1, z3 );
+                moveTile( tile3, x3, y3, z3, x3, 1, z3 );
+                removeTile( x3, 1, z3 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( 1 ),
+                    indexToPoint( z2 ) ) );
+                newTile1.drawTile( bg2 );
+                graphicTiles[x2][1][z2].detach();
+                graphicTiles[x2][1][z2].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[x2][1][z2] );
+                activeTiles[x2][1][z2] = newTile1;
+
             }
-            else if ( num2 == num3 && num0 != num1 )
+            else if ( num1 == num2 && num3 != num4 )
+            {
+                score += calcPoints( num1 * 2 );
+                removeTile( x1, 0, z1 );
+                moveTile( tile2, x2, y2, z2, x1, 0, z1 );
+                removeTile( x1, 0, z1 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
+                newTile.setPoint( new Point3f( indexToPoint( x1 ),
+                    indexToPoint( 0 ),
+                    indexToPoint( z1 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x1][0][z1].detach();
+                graphicTiles[x1][0][z1].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x1][0][z1] );
+                removeTile( x3, 1, z3 );
+                activeTiles[x1][0][z1] = newTile;
+                moveTile( tile3, x3, y3, z3, x3, 1, z3 );
+                moveTile( tile4, x4, y4, z4, x4, 2, z4 );
+            }
+            else if ( num2 == num3 )
             {
                 score += calcPoints( num2 * 2 );
-                removeTile( x2, 2, z2 );
-                moveTile( tile3, x3, y3, z3, x2, 2, z2 );
-                removeTile( x2, 2, z2 );
+                removeTile( x2, 1, z2 );
+                moveTile( tile3, x3, y3, z3, x3, 1, z3 );
+                removeTile( x2, 1, z2 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( 2 ),
-                    indexToPoint( z1 ) ) );
+                newTile.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( 1 ),
+                    indexToPoint( z2 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x2][2][z2].detach();
-                graphicTiles[x2][2][z2].addChild( bg1 );
-                activeTiles[x2][2][z2] = newTile;
-                su.addBranchGraph( graphicTiles[x2][2][z2] );
+                graphicTiles[x2][1][z2].detach();
+                graphicTiles[x2][1][z2].addChild( bg1 );
+                activeTiles[x2][1][z2] = newTile;
+                su.addBranchGraph( graphicTiles[x2][1][z2] );
+                moveTile( tile4, x4, y4, z4, x4, 2, z4 );
+            }
+            else if ( num3 == num4 && num1 != num2 )
+            {
+                score += calcPoints( num3 * 2 );
+                removeTile( x3, 2, z3 );
+                moveTile( tile4, x4, y4, z4, x3, 2, z3 );
+                removeTile( x3, 2, z3 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( 2 ),
+                    indexToPoint( z2 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x3][2][z3].detach();
+                graphicTiles[x3][2][z3].addChild( bg1 );
+                activeTiles[x3][2][z3] = newTile;
+                su.addBranchGraph( graphicTiles[x3][2][z3] );
 
             }
         }
@@ -928,87 +929,87 @@ public class ThreeD2048Graphics extends JPanel
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( 0, y0, z0 );
-                moveTile( tile1, x1, y1, z1, 0, y0, z0 );
-                removeTile( 0, y0, z0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( 0 ),
-                    indexToPoint( y0 ),
-                    indexToPoint( z0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[0][y0][z0].detach();
-                graphicTiles[0][y0][z0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[0][y0][z0] );
-                activeTiles[0][y0][z0] = newTile;
-                removeTile( 1, y2, z2 );
-                moveTile( tile2, x2, y2, z2, 1, y2, z2 );
-                removeTile( 1, y2, z2 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( 1 ),
-                    indexToPoint( y1 ),
-                    indexToPoint( z1 ) ) );
-                newTile1.drawTile( bg2 );
-                graphicTiles[1][y1][z1].detach();
-                graphicTiles[1][y1][z1].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[1][y1][z1] );
-                activeTiles[1][y1][z1] = newTile1;
-
-            }
-            else if ( num0 == num1 && num2 != num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                removeTile( 0, y0, z0 );
-                moveTile( tile1, x1, y1, z1, 0, y0, z0 );
-                removeTile( 0, y0, z0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( 0 ),
-                    indexToPoint( y0 ),
-                    indexToPoint( z0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[0][y0][z0].detach();
-                graphicTiles[0][y0][z0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[0][y0][z0] );
-                removeTile( 1, y2, z2 );
-                activeTiles[0][y0][z0] = newTile;
-                moveTile( tile2, x2, y2, z2, 1, y2, z2 );
-                moveTile( tile3, x3, y3, z3, 2, y3, z3 );
-            }
-            else if ( num1 == num2 )
+            if ( num1 == num2 && num3 == num4 )
             {
                 score += calcPoints( num1 * 2 );
-                removeTile( 1, y1, z1 );
-                moveTile( tile2, x2, y2, z2, 1, y2, z2 );
-                removeTile( 1, y1, z1 );
-                Tile3D newTile = new Tile3D( num1 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( 1 ),
+                score += calcPoints( num3 * 2 );
+                removeTile( 0, y1, z1 );
+                moveTile( tile2, x2, y2, z2, 0, y1, z1 );
+                removeTile( 0, y1, z1 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
+                newTile.setPoint( new Point3f( indexToPoint( 0 ),
                     indexToPoint( y1 ),
                     indexToPoint( z1 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[1][y1][z1].detach();
-                graphicTiles[1][y1][z1].addChild( bg1 );
-                activeTiles[1][y1][z1] = newTile;
-                su.addBranchGraph( graphicTiles[1][y1][z1] );
-                moveTile( tile3, x3, y3, z3, 2, y3, z3 );
+                graphicTiles[0][y1][z1].detach();
+                graphicTiles[0][y1][z1].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[0][y1][z1] );
+                activeTiles[0][y1][z1] = newTile;
+                removeTile( 1, y3, z3 );
+                moveTile( tile3, x3, y3, z3, 1, y3, z3 );
+                removeTile( 1, y3, z3 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( 1 ),
+                    indexToPoint( y2 ),
+                    indexToPoint( z2 ) ) );
+                newTile1.drawTile( bg2 );
+                graphicTiles[1][y2][z2].detach();
+                graphicTiles[1][y2][z2].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[1][y2][z2] );
+                activeTiles[1][y2][z2] = newTile1;
+
             }
-            else if ( num2 == num3 && num0 != num1 )
+            else if ( num1 == num2 && num3 != num4 )
+            {
+                score += calcPoints( num1 * 2 );
+                removeTile( 0, y1, z1 );
+                moveTile( tile2, x2, y2, z2, 0, y1, z1 );
+                removeTile( 0, y1, z1 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
+                newTile.setPoint( new Point3f( indexToPoint( 0 ),
+                    indexToPoint( y1 ),
+                    indexToPoint( z1 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[0][y1][z1].detach();
+                graphicTiles[0][y1][z1].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[0][y1][z1] );
+                removeTile( 1, y3, z3 );
+                activeTiles[0][y1][z1] = newTile;
+                moveTile( tile3, x3, y3, z3, 1, y3, z3 );
+                moveTile( tile4, x4, y4, z4, 2, y4, z4 );
+            }
+            else if ( num2 == num3 )
             {
                 score += calcPoints( num2 * 2 );
-                removeTile( 2, y2, z2 );
-                moveTile( tile3, x3, y3, z3, 2, y2, z2 );
-                removeTile( 2, y2, z2 );
+                removeTile( 1, y2, z2 );
+                moveTile( tile3, x3, y3, z3, 1, y3, z3 );
+                removeTile( 1, y2, z2 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( 2 ),
-                    indexToPoint( y1 ),
-                    indexToPoint( z1 ) ) );
+                newTile.setPoint( new Point3f( indexToPoint( 1 ),
+                    indexToPoint( y2 ),
+                    indexToPoint( z2 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[2][y2][z2].detach();
-                graphicTiles[2][y2][z2].addChild( bg1 );
-                activeTiles[2][y2][z2] = newTile;
-                su.addBranchGraph( graphicTiles[2][y2][z2] );
+                graphicTiles[1][y2][z2].detach();
+                graphicTiles[1][y2][z2].addChild( bg1 );
+                activeTiles[1][y2][z2] = newTile;
+                su.addBranchGraph( graphicTiles[1][y2][z2] );
+                moveTile( tile4, x4, y4, z4, 2, y4, z4 );
+            }
+            else if ( num3 == num4 && num1 != num2 )
+            {
+                score += calcPoints( num3 * 2 );
+                removeTile( 2, y3, z3 );
+                moveTile( tile4, x4, y4, z4, 2, y3, z3 );
+                removeTile( 2, y3, z3 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( 2 ),
+                    indexToPoint( y2 ),
+                    indexToPoint( z2 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[2][y3][z3].detach();
+                graphicTiles[2][y3][z3].addChild( bg1 );
+                activeTiles[2][y3][z3] = newTile;
+                su.addBranchGraph( graphicTiles[2][y3][z3] );
 
             }
         }
@@ -1016,171 +1017,171 @@ public class ThreeD2048Graphics extends JPanel
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
+            if ( num1 == num2 && num3 == num4 )
             {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( 3, y3, z3 );
-                moveTile( tile2, x2, y2, z2, 3, y3, z3 );
-                removeTile( 3, y3, z3 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
+                score += calcPoints( num1 * 2 );
+                score += calcPoints( num3 * 2 );
+                removeTile( 3, y4, z4 );
+                moveTile( tile3, x3, y3, z3, 3, y4, z4 );
+                removeTile( 3, y4, z4 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
                 newTile.setPoint( new Point3f( indexToPoint( 3 ),
+                    indexToPoint( y4 ),
+                    indexToPoint( z4 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[3][y4][z4].detach();
+                graphicTiles[3][y4][z4].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[3][y4][z4] );
+                activeTiles[3][y4][z4] = newTile;
+                removeTile( 2, y3, z3 );
+                moveTile( tile2, x2, y2, z2, 2, y3, z3 );
+                removeTile( 2, y3, z3 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( 2 ),
                     indexToPoint( y3 ),
                     indexToPoint( z3 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[3][y3][z3].detach();
-                graphicTiles[3][y3][z3].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[3][y3][z3] );
-                activeTiles[3][y3][z3] = newTile;
-                removeTile( 2, y2, z2 );
-                moveTile( tile1, x1, y1, z1, 2, y2, z2 );
-                removeTile( 2, y2, z2 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( 2 ),
-                    indexToPoint( y2 ),
-                    indexToPoint( z2 ) ) );
                 newTile1.drawTile( bg2 );
-                graphicTiles[2][y2][z2].detach();
-                graphicTiles[2][y2][z2].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[2][y2][z2] );
-                activeTiles[2][y2][z2] = newTile1;
+                graphicTiles[2][y3][z3].detach();
+                graphicTiles[2][y3][z3].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[2][y3][z3] );
+                activeTiles[2][y3][z3] = newTile1;
             }
-            else if ( num0 == num1 && num2 != num3 )
+            else if ( num1 == num2 && num3 != num4 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( 1, y1, z1 );
-                moveTile( tile0, x0, y0, x0, 1, y1, z1 );
-                removeTile( 1, y1, z1 );
-                Tile3D newTile = new Tile3D( num0 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( 1 ),
-                    indexToPoint( y1 ),
-                    indexToPoint( z1 ) ) );
-                newTile.drawTile( bg );
-                graphicTiles[1][y1][z1].detach();
-                graphicTiles[1][y1][z1].addChild( bg );
-                su.addBranchGraph( graphicTiles[1][y1][z1] );
-                activeTiles[1][y1][z1] = newTile;
-            }
-            else if ( num1 == num2 )
-            {
-                score += calcPoints( num1 * 2 );
-                removeTile( 2, y2, z2 );
-                moveTile( tile1, x1, y1, z1, 2, y2, z2 );
-                removeTile( 2, y2, z2 );
+                score += calcPoints( num2 * 2 );
+                removeTile( 1, y2, z2 );
+                moveTile( tile2, x1, y1, x1, 1, y2, z2 );
+                removeTile( 1, y2, z2 );
                 Tile3D newTile = new Tile3D( num1 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( 2 ),
+                newTile.setPoint( new Point3f( indexToPoint( 1 ),
                     indexToPoint( y2 ),
                     indexToPoint( z2 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[2][y2][z2].detach();
-                graphicTiles[2][y2][z2].addChild( bg1 );
-                activeTiles[2][y2][z2] = newTile;
-                su.addBranchGraph( graphicTiles[2][y2][z2] );
-                moveTile( tile0, x0, y0, z0, 1, y1, z1 );
+                newTile.drawTile( bg );
+                graphicTiles[1][y2][z2].detach();
+                graphicTiles[1][y2][z2].addChild( bg );
+                su.addBranchGraph( graphicTiles[1][y2][z2] );
+                activeTiles[1][y2][z2] = newTile;
             }
             else if ( num2 == num3 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( 3, y3, z3 );
-                moveTile( tile2, x2, y2, z2, 3, y3, z3 );
-                removeTile( 3, y3, z3 );
+                score += calcPoints( num2 * 2 );
+                removeTile( 2, y3, z3 );
+                moveTile( tile2, x2, y2, z2, 2, y3, z3 );
+                removeTile( 2, y3, z3 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( 3 ),
+                newTile.setPoint( new Point3f( indexToPoint( 2 ),
                     indexToPoint( y3 ),
                     indexToPoint( z3 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[3][y3][z3].detach();
-                graphicTiles[3][y3][z3].addChild( bg1 );
-                activeTiles[3][y3][z3] = newTile;
-                moveTile( tile1, x1, y1, z1, 2, y1, z1 );
-                moveTile( tile0, x0, y0, z0, 1, y0, z0 );
+                graphicTiles[2][y3][z3].detach();
+                graphicTiles[2][y3][z3].addChild( bg1 );
+                activeTiles[2][y3][z3] = newTile;
+                su.addBranchGraph( graphicTiles[2][y3][z3] );
+                moveTile( tile2, x1, y1, z1, 1, y2, z2 );
+            }
+            else if ( num3 == num4 )
+            {
+                score += calcPoints( num2 * 2 );
+                removeTile( 3, y4, z4 );
+                moveTile( tile3, x3, y3, z3, 3, y4, z4 );
+                removeTile( 3, y4, z4 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( 3 ),
+                    indexToPoint( y4 ),
+                    indexToPoint( z4 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[3][y4][z4].detach();
+                graphicTiles[3][y4][z4].addChild( bg1 );
+                activeTiles[3][y4][z4] = newTile;
+                moveTile( tile2, x2, y2, z2, 2, y2, z2 );
+                moveTile( tile2, x1, y1, z1, 1, y1, z1 );
             }
         }
         else if ( directionOfMovement == IN )
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( x0, y0, 0 );
-                moveTile( tile1, x1, y1, z1, x0, y0, 0 );
-                removeTile( x0, y0, 0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x0 ),
-                    indexToPoint( y0 ),
-                    indexToPoint( 0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x0][y0][0].detach();
-                graphicTiles[x0][y0][0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x0][y0][0] );
-                activeTiles[x0][y0][0] = newTile;
-                removeTile( x2, y2, 1 );
-                moveTile( tile2, x2, y2, z2, x2, y2, 1 );
-                removeTile( x2, y2, 1 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( y1 ),
-                    indexToPoint( 1 ) ) );
-                newTile1.drawTile( bg2 );
-                graphicTiles[x1][y1][1].detach();
-                graphicTiles[x1][y1][1].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[x1][y1][1] );
-                activeTiles[x1][y1][1] = newTile1;
-
-            }
-            else if ( num0 == num1 && num2 != num3 )
-            {
-                score += calcPoints( num0 * 2 );
-                removeTile( x0, y0, 0 );
-                moveTile( tile1, x1, y1, z1, x0, y0, 0 );
-                removeTile( x0, y0, 0 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x0 ),
-                    indexToPoint( y0 ),
-                    indexToPoint( 0 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x0][y0][0].detach();
-                graphicTiles[x0][y0][0].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x0][y0][0] );
-                removeTile( x2, y2, 1 );
-                activeTiles[x0][0][z0] = newTile;
-                moveTile( tile2, x2, y2, z2, x2, y2, 1 );
-                moveTile( tile3, x3, y3, z3, x3, y3, 2 );
-            }
-            else if ( num1 == num2 )
+            if ( num1 == num2 && num3 == num4 )
             {
                 score += calcPoints( num1 * 2 );
-                removeTile( x1, y1, 1 );
-                moveTile( tile2, x2, y2, z2, x2, y2, 1 );
-                removeTile( x1, y1, 1 );
-                Tile3D newTile = new Tile3D( num1 * 2 );
+                score += calcPoints( num3 * 2 );
+                removeTile( x1, y1, 0 );
+                moveTile( tile2, x2, y2, z2, x1, y1, 0 );
+                removeTile( x1, y1, 0 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
                 newTile.setPoint( new Point3f( indexToPoint( x1 ),
                     indexToPoint( y1 ),
-                    indexToPoint( 1 ) ) );
+                    indexToPoint( 0 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x1][y1][1].detach();
-                graphicTiles[x1][y1][1].addChild( bg1 );
-                activeTiles[x1][y1][1] = newTile;
-                su.addBranchGraph( graphicTiles[x1][y1][1] );
-                moveTile( tile3, x3, y3, z3, x3, y3, 2 );
+                graphicTiles[x1][y1][0].detach();
+                graphicTiles[x1][y1][0].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x1][y1][0] );
+                activeTiles[x1][y1][0] = newTile;
+                removeTile( x3, y3, 1 );
+                moveTile( tile3, x3, y3, z3, x3, y3, 1 );
+                removeTile( x3, y3, 1 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( y2 ),
+                    indexToPoint( 1 ) ) );
+                newTile1.drawTile( bg2 );
+                graphicTiles[x2][y2][1].detach();
+                graphicTiles[x2][y2][1].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[x2][y2][1] );
+                activeTiles[x2][y2][1] = newTile1;
+
             }
-            else if ( num2 == num3 && num0 != num1 )
+            else if ( num1 == num2 && num3 != num4 )
+            {
+                score += calcPoints( num1 * 2 );
+                removeTile( x1, y1, 0 );
+                moveTile( tile2, x2, y2, z2, x1, y1, 0 );
+                removeTile( x1, y1, 0 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
+                newTile.setPoint( new Point3f( indexToPoint( x1 ),
+                    indexToPoint( y1 ),
+                    indexToPoint( 0 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x1][y1][0].detach();
+                graphicTiles[x1][y1][0].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x1][y1][0] );
+                removeTile( x3, y3, 1 );
+                activeTiles[x1][0][z1] = newTile;
+                moveTile( tile3, x3, y3, z3, x3, y3, 1 );
+                moveTile( tile4, x4, y4, z4, x4, y4, 2 );
+            }
+            else if ( num2 == num3 )
             {
                 score += calcPoints( num2 * 2 );
-                removeTile( x2, x2, 2 );
-                moveTile( tile3, x3, y3, z3, x2, y2, 2 );
-                removeTile( x2, y2, 2 );
+                removeTile( x2, y2, 1 );
+                moveTile( tile3, x3, y3, z3, x3, y3, 1 );
+                removeTile( x2, y2, 1 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( y1 ),
+                newTile.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( y2 ),
+                    indexToPoint( 1 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x2][y2][1].detach();
+                graphicTiles[x2][y2][1].addChild( bg1 );
+                activeTiles[x2][y2][1] = newTile;
+                su.addBranchGraph( graphicTiles[x2][y2][1] );
+                moveTile( tile4, x4, y4, z4, x4, y4, 2 );
+            }
+            else if ( num3 == num4 && num1 != num2 )
+            {
+                score += calcPoints( num3 * 2 );
+                removeTile( x3, x3, 2 );
+                moveTile( tile4, x4, y4, z4, x3, y3, 2 );
+                removeTile( x3, y3, 2 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( x2 ),
+                    indexToPoint( y2 ),
                     indexToPoint( 2 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x2][y2][2].detach();
-                graphicTiles[x2][y2][2].addChild( bg1 );
-                activeTiles[x2][y2][2] = newTile;
-                su.addBranchGraph( graphicTiles[x2][y2][2] );
+                graphicTiles[x3][y3][2].detach();
+                graphicTiles[x3][y3][2].addChild( bg1 );
+                activeTiles[x3][y3][2] = newTile;
+                su.addBranchGraph( graphicTiles[x3][y3][2] );
 
             }
         }
@@ -1188,84 +1189,84 @@ public class ThreeD2048Graphics extends JPanel
         {
             BranchGroup bg1 = new BranchGroup();
             BranchGroup bg2 = new BranchGroup();
-            if ( num0 == num1 && num2 == num3 )
+            if ( num1 == num2 && num3 == num4 )
             {
-                score += calcPoints( num0 * 2 );
-                score += calcPoints( num2 * 2 );
-                removeTile( x3, y3, 3 );
-                moveTile( tile2, x2, y2, z2, x3, y3, 3 );
-                removeTile( x3, y3, 3 );
-                Tile3D newTile = new Tile3D( num0 * 2 ); // (0, y, z)
-                newTile.setPoint( new Point3f( indexToPoint( x3 ),
-                    indexToPoint( y3 ),
+                score += calcPoints( num1 * 2 );
+                score += calcPoints( num3 * 2 );
+                removeTile( x4, y4, 3 );
+                moveTile( tile3, x3, y3, z3, x4, y4, 3 );
+                removeTile( x4, y4, 3 );
+                Tile3D newTile = new Tile3D( num1 * 2 ); // (0, y, z)
+                newTile.setPoint( new Point3f( indexToPoint( x4 ),
+                    indexToPoint( y4 ),
                     indexToPoint( 3 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x3][y3][3].detach();
-                graphicTiles[x3][y3][3].addChild( bg1 );
-                su.addBranchGraph( graphicTiles[x3][y3][3] );
-                activeTiles[x3][y3][3] = newTile;
-                removeTile( x2, y2, 2 );
-                moveTile( tile1, x1, y1, z1, x2, y2, 2 );
-                removeTile( x2, y2, 2 );
-                Tile3D newTile1 = new Tile3D( num2 * 2 );
-                newTile1.setPoint( new Point3f( indexToPoint( x2 ),
-                    indexToPoint( y2 ),
+                graphicTiles[x4][y4][3].detach();
+                graphicTiles[x4][y4][3].addChild( bg1 );
+                su.addBranchGraph( graphicTiles[x4][y4][3] );
+                activeTiles[x4][y4][3] = newTile;
+                removeTile( x3, y3, 2 );
+                moveTile( tile2, x2, y2, z2, x3, y3, 2 );
+                removeTile( x3, y3, 2 );
+                Tile3D newTile1 = new Tile3D( num3 * 2 );
+                newTile1.setPoint( new Point3f( indexToPoint( x3 ),
+                    indexToPoint( y3 ),
                     indexToPoint( 2 ) ) );
                 newTile1.drawTile( bg2 );
-                graphicTiles[x2][y2][2].detach();
-                graphicTiles[x2][y2][2].addChild( bg2 );
-                su.addBranchGraph( graphicTiles[x2][y2][2] );
-                activeTiles[x2][y2][y2] = newTile1;
+                graphicTiles[x3][y3][2].detach();
+                graphicTiles[x3][y3][2].addChild( bg2 );
+                su.addBranchGraph( graphicTiles[x3][y3][2] );
+                activeTiles[x3][y3][y3] = newTile1;
             }
-            else if ( num0 == num1 && num2 != num3 )
+            else if ( num1 == num2 && num3 != num4 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( x1, y1, 1 );
-                moveTile( tile0, x0, y0, x0, x1, y1, 1 );
-                removeTile( x1, y1, 1 );
-                Tile3D newTile = new Tile3D( num0 * 2 );
-                newTile.setPoint( new Point3f( indexToPoint( x1 ),
-                    indexToPoint( y1 ),
-                    indexToPoint( 1 ) ) );
-                newTile.drawTile( bg );
-                graphicTiles[x1][y1][1].detach();
-                graphicTiles[x1][y1][1].addChild( bg );
-                su.addBranchGraph( graphicTiles[x1][y1][1] );
-                activeTiles[x1][y1][1] = newTile;
-            }
-            else if ( num1 == num2 )
-            {
-                score += calcPoints( num1 * 2 );
-                removeTile( x2, y2, 2 );
-                moveTile( tile1, x1, y1, z1, x2, y2, 2 );
-                removeTile( x2, y2, 2 );
+                score += calcPoints( num2 * 2 );
+                removeTile( x2, y2, 1 );
+                moveTile( tile2, x1, y1, x1, x2, y2, 1 );
+                removeTile( x2, y2, 1 );
                 Tile3D newTile = new Tile3D( num1 * 2 );
                 newTile.setPoint( new Point3f( indexToPoint( x2 ),
                     indexToPoint( y2 ),
-                    indexToPoint( 2 ) ) );
-                newTile.drawTile( bg1 );
-                graphicTiles[x2][y2][2].detach();
-                graphicTiles[x2][y2][2].addChild( bg1 );
-                activeTiles[x2][y2][2] = newTile;
-                su.addBranchGraph( graphicTiles[x2][y2][2] );
-                moveTile( tile0, x0, y0, z0, x1, y1, 1 );
+                    indexToPoint( 1 ) ) );
+                newTile.drawTile( bg );
+                graphicTiles[x2][y2][1].detach();
+                graphicTiles[x2][y2][1].addChild( bg );
+                su.addBranchGraph( graphicTiles[x2][y2][1] );
+                activeTiles[x2][y2][1] = newTile;
             }
             else if ( num2 == num3 )
             {
-                score += calcPoints( num1 * 2 );
-                removeTile( x3, y3, 3 );
-                moveTile( tile2, x2, y2, z2, x3, y3, 3 );
-                removeTile( x3, y3, 3 );
+                score += calcPoints( num2 * 2 );
+                removeTile( x3, y3, 2 );
+                moveTile( tile2, x2, y2, z2, x3, y3, 2 );
+                removeTile( x3, y3, 2 );
                 Tile3D newTile = new Tile3D( num2 * 2 );
                 newTile.setPoint( new Point3f( indexToPoint( x3 ),
                     indexToPoint( y3 ),
+                    indexToPoint( 2 ) ) );
+                newTile.drawTile( bg1 );
+                graphicTiles[x3][y3][2].detach();
+                graphicTiles[x3][y3][2].addChild( bg1 );
+                activeTiles[x3][y3][2] = newTile;
+                su.addBranchGraph( graphicTiles[x3][y3][2] );
+                moveTile( tile2, x1, y1, z1, x2, y2, 1 );
+            }
+            else if ( num3 == num4 )
+            {
+                score += calcPoints( num2 * 2 );
+                removeTile( x4, y4, 3 );
+                moveTile( tile3, x3, y3, z3, x4, y4, 3 );
+                removeTile( x4, y4, 3 );
+                Tile3D newTile = new Tile3D( num3 * 2 );
+                newTile.setPoint( new Point3f( indexToPoint( x4 ),
+                    indexToPoint( y4 ),
                     indexToPoint( 3 ) ) );
                 newTile.drawTile( bg1 );
-                graphicTiles[x3][y3][3].detach();
-                graphicTiles[x3][y3][3].addChild( bg1 );
-                activeTiles[x3][y3][3] = newTile;
-                moveTile( tile1, x1, y1, z1, x1, y1, 2 );
-                moveTile( tile0, x0, y0, z0, x1, y1, 0 );
+                graphicTiles[x4][y4][3].detach();
+                graphicTiles[x4][y4][3].addChild( bg1 );
+                activeTiles[x4][y4][3] = newTile;
+                moveTile( tile2, x2, y2, z2, x2, y2, 2 );
+                moveTile( tile2, x1, y1, z1, x2, y2, 0 );
             }
         }
     }
@@ -1584,12 +1585,6 @@ public class ThreeD2048Graphics extends JPanel
                         && activeTiles[x][2][z] != null
                         && activeTiles[x][3][z] != null )
                     {
-                        int num0 = activeTiles[x][0][z].getNum();
-                        int num1 = activeTiles[x][1][z].getNum();
-                        int num2 = activeTiles[x][2][z].getNum();
-                        int num3 = activeTiles[x][3][z].getNum();
-                        if ( num0 == num1 || num1 == num2 || num2 == num3 )
-                        {
                             fourTileCollisionHandler( activeTiles[x][0][z],
                                 activeTiles[x][1][z],
                                 activeTiles[x][2][z],
@@ -1598,12 +1593,7 @@ public class ThreeD2048Graphics extends JPanel
                                 new Point3i( x, 1, z ),
                                 new Point3i( x, 2, z ),
                                 new Point3i( x, 3, z ),
-                                DOWN );
-                        }
-                        else
-                        {
-                            // Do Nothing
-                        }
+                                UP );
                     }
                 }
             }
@@ -3264,8 +3254,6 @@ public class ThreeD2048Graphics extends JPanel
         
         activeTiles[x][y][z] = new Tile3D( 2 );
         
-        Random rand = new Random();
-        int prob = rand.nextInt( 2 );
 
         if ( x1 != x || y1 != y || z1 != z )
         {
